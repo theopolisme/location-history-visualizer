@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>location-history-visualizer</title>
+    <link rel="stylesheet" href="index.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css"/>
+</head>
+<body>
+
+<div class="container">
+<div class="content">
+
+    <!-- Fork me on GitHub -->
+    <a href="https://github.com/theopolisme/location-history-visualizer" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"></a>
+
+    <!-- Intro, before data has been uploaded -->
+    <div id="intro" class="content-box">
+        <h2>location-history-visualizer</h2>
+        <p>Welcome to <b>location-history-visualizer</b>, a tool for visualizing your collected Google <a href="https://google.com/locationhistory" target="_blank">Location History</a> data. <i>Don't worry&mdash;all processing and visualization happens directly on your computer, so rest assured that nobody is able to access your Location History but you... and Google, of course.</i> ^.^</p>
+        <p>To start off, you'll need to go to <a href="https://google.com/takeout" target="_blank">Google Takeout</a> to download your Location History data: on that page, deselect everything except Location History by clicking "Select none" and then reselecting "Location History". Then hit "Next" and, finally, click "Create archive". Once the archive has been created, click "Download". Unzip the downloaded file, and open the "Location History" folder within. <b>Then, drag and drop <i>LocationHistory.json</i> from inside that folder onto this page.</b> Let the visualization begin!</p>
+        <p class="credit">A project by <a href="https://github.com/theopolisme" target="_blank">@theopolisme</a>. Made in 2014 in Memphis, Tennessee.</p>
+    </div>
+
+    <!-- Shown in interim while processing is in progress -->
+    <div id="working" class="content-box hidden">
+        <h2>Processing data...</h2>
+        <div class="spinner">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+        <p><span id="currentStatus">Waking up...</span></p>
+        <p>This will take a while... sit back, get a cup of tea or something.</p>
+        <p><i>Why does it take so long?</i> Depending on how long Google's been tracking your location, you may have hundreds of thousands of [latitude, longitude] pairs, every one of which must be loaded, analyzed, and plotted. That's a lot of dots.</p>
+    </div>
+
+    <!-- Content displayed once processing complete -->
+    <div id="done" class="content-box hidden">
+        <h2>Render complete!</h2>
+        <p>Successfully processed <span id="numberProcessed"></span> data points to generate the heatmap. Click inside this box to dismiss it and start exploring...</p>
+        <p><i>Zoom</i> by scrolling, double-clicking, or using the buttons in the upper lefthand corner. <i>Navigate</i> by clicking and dragging.</p>
+        <p class="credit">A project by <a href="https://github.com/theopolisme" target="_blank">@theopolisme</a>. Made in 2014 in Memphis, Tennessee.</p>
+    </div>
+
+</div>
+</div>
+
+<div id="map"></div>
+
+<!-- dropzone, outta here! -->
+<div id="null" class="hidden"></div>
+
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/3.8.4/dropzone.min.js"></script>
+<script src="lib/leaflet.heat.min.js"></script>
+<script src="lib/stream.js"></script>
+<script src="index.js"></script>
+</body>
+</html>
