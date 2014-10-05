@@ -26,6 +26,12 @@
 				dropzone.disable(); // Your job is done, buddy
 			}
 		} );
+
+		// For mobile browsers, allow direct file selection as well
+		$( '#file' ).change( function () {
+			stageTwo( this.files[0] );
+			dropzone.disable();
+		} );
 	}
 
 	////// STAGE 2 - ZE PROCESSING //////
