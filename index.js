@@ -22,12 +22,8 @@
 			previewsContainer: '#null',
 			clickable: false,
 			accept: function ( file, done ) {
-				if ( file.type !== 'application/json' ) {
-					alert( 'Whoops, make sure you upload a .json file.' );
-				} else {
-					stageTwo( file );
-					dropzone.disable(); // Your job is done, buddy
-				}
+				stageTwo( file );
+				dropzone.disable(); // Your job is done, buddy
 			}
 		} );
 	}
