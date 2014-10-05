@@ -1,4 +1,4 @@
-( function ( $, L, oboe, FileReadStream ) {
+( function ( $, L, oboe, FileReadStream, prettySize ) {
 	var map;
 
 	// Start at the beginning
@@ -56,16 +56,17 @@
 
 		function processFile ( file ) {
 			var pointNo = 0,
+				fileSize = prettySize( file.size ),
 				filestream = new FileReadStream( file );
 
-			status( 'Reading file...' );
+			status( 'Preparing to import file (' + fileSize + ')...' );
 
 			oboe( filestream )
 				.on( 'node', {
 					'locations.*': function ( location ) {
 						// Add the new point... prevent lots of redraws by writing to _latlngs
 						pointNo += 1;
-						status( 'Adding point #' + pointNo.toLocaleString() + '...' );
+						status( 'Adding point #' + pointNo.toLocaleString() + ' (' + prettySize( filestream._offset ) + ' / ' + fileSize + ')' );
 						heat._latlngs.push( [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] );
 					},
 					'locations': function () {
@@ -107,4 +108,4 @@
 		} );
 	}
 
-}( jQuery, L, oboe, FileReadStream ) );
+}( jQuery, L, oboe, FileReadStream, prettySize ) );
