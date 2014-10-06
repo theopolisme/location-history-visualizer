@@ -1,14 +1,62 @@
 ( function ( $, L, oboe, FileReadStream, prettySize ) {
 	var map;
-
+	var heat;
+	// data now stored in format [time, lat, lat]
+	var data =[];
+	var date = new Date();
+	var filterStruct = {
+							startDate:new Date("1979-12-31"), 
+							endDate: date,
+							startTime: "00:00",
+							endTime: "23:59"
+						}
 	// Start at the beginning
 	stageOne();
 
 	////// STAGE 1 - ZE VELCOME UNT ZE UPLOAD //////
-
+	function between(time, startTime, endTime)
+	{
+		start = new Date(Date.parse(time.toDateString() + " " + startTime));
+		end= new Date(Date.parse(time.toDateString() + " " + endTime));
+		return time >start && time < end;
+	}
+	function update()
+	{
+		dataActive = data.filter(function(element)
+		{
+			date = element[0] > filterStruct.startDate && element[0] < filterStruct.endDate;
+			hours = between(element[0], filterStruct.startTime, filterStruct.endTime);
+			return date && hours;
+		});
+		heat._latlngs = dataActive.map(function(element){return element.slice(1)});
+		heat.redraw();
+	}
 	function stageOne () {
 		var dropzone;
 
+		$(".updateable").change(function(e)
+		{
+			var maxValue = Number($("#heatRangeId").val());
+			var blur = Number($("#blurId").val());
+			var radius = Number($("#radiusId").val());
+			heat.setOptions({blur:blur, max:maxValue, radius:radius});
+			
+			var value = $("#startDate").val();
+			filterStruct.startDate = new Date(value);
+		
+			value = $("#endDate").val();
+			filterStruct.endDate= new Date(value);
+			
+			value = $("#startTime").val();
+			filterStruct.startTime= value;
+			
+			value = $("#endTime").val();
+			filterStruct.endTime= value;
+			
+			update();
+		});
+		
+	
 		// Initialize the map
 		map = L.map( 'map' ).setView([0,0], 2);
 		L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -37,11 +85,12 @@
 	////// STAGE 2 - ZE PROCESSING //////
 
 	function stageTwo ( file ) {
-		var heat = L.heatLayer( [], {
-				blur: 20
+		heat = L.heatLayer( [], {
+				blur: 20,
+				max: 5.0
  			} ).addTo( map ),
 			SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
-
+		
 		// First, change tabs
 		$( 'body' ).addClass( 'working' );
 		$( '#intro' ).addClass( 'hidden' );
@@ -56,32 +105,28 @@
 
 		function processFile ( file ) {
 			var pointNo = 0,
-				fileSize = prettySize( file.size ),
-				filestream = new FileReadStream( file );
-
+				fileSize = prettySize( file.size );
 			status( 'Preparing to import file (' + fileSize + ')...' );
-
-			oboe( filestream )
-				.on( 'node', {
-					'locations.*': function ( location ) {
-						// Add the new point... prevent lots of redraws by writing to _latlngs
-						pointNo += 1;
-						status( 'Adding point #' + pointNo.toLocaleString() + ' (' + prettySize( filestream._offset ) + ' / ' + fileSize + ')' );
-						heat._latlngs.push( [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] );
-					},
-					'locations': function () {
-						// Don't need any other data now
-						this.abort();
-						// Also, trigger the next step :D
-						renderMap();
-					}
-				} )
-				.on( 'fail', function () {
-					status( 'Something went wrong reading your JSON file. Ensure you\'re uploading a "direct-from-Google" JSON file and try again, or create an issue on GitHub if the problem persists.' );
-   				} );
-
+			reader = new FileReader();
+			reader.onprogress = function(evt)
+			{
+			if (evt.lengthComputable) {
+				 var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+				  status(percentLoaded +"% of " + fileSize + " loaded");
+			};
+			}
+			reader.onload = function(evt)
+			{
+				var tmp = JSON.parse(evt.target.result);
+				data = tmp.locations.map(function(location){return [new Date(Number(location.timestampMs)), location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ]});
+				activeData = data;
+				pointNo = data.length;
+				renderMap();
+			};
+			reader.readAsText(file);
+			
 			function renderMap () {
-				heat.redraw();
+				update();
 				// Stage 3!
 				stageThree( /* numberProcessed */ pointNo );
 			}

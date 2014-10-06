@@ -6,7 +6,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css"/>
 </head>
 <body>
-
+<form>
+	Change Max Heat Value
+  <input type="range" class="updateable" name="heatRange" id="heatRangeId" min="0" step ="0.5" max="6">
+  Change Blur
+  <input type="range" class="updateable" name="blur" id="blurId" min="3" max="25" value ="10">
+  Change Radius
+  <input type="range" class="updateable" name="radius" id="radiusId" min="2"  max="20" value ="15">
+  Start Date
+  <input type="date" id="startDate" class="updateable" value="1999-12-31">
+  End Date
+  <input type="date" id="endDate" class="updateable" value="2015-12-31">
+  Start Time of Day
+  <input type="time" id="startTime" class="updateable" value="00:00">
+  End Time of Day
+  <input type="time" id="endTime" class="updateable" value="23:59">
+</form>
 <div class="container">
 <div class="content">
 
