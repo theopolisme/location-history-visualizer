@@ -78,7 +78,6 @@
 							status( 'Adding point #' + pointNo.toLocaleString() + ' (' + prettySize( filestream._offset ) + ' / ' + fileSize + ')' );
 						}
 						heat._latlngs.push( [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] );
-						test = [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] ;
 					},
 					'locations': function () {
 						// Don't need any other data now
