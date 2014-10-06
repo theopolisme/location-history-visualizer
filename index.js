@@ -1,14 +1,19 @@
 ( function ( $, L, oboe, FileReadStream, prettySize ) {
 	var map;
-
+	var heat;
 	// Start at the beginning
 	stageOne();
 
 	////// STAGE 1 - ZE VELCOME UNT ZE UPLOAD //////
-
+	
 	function stageOne () {
 		var dropzone;
 
+		// Add ability to change max value
+		$("#heatRangeId").change(function(e){
+			var maxValue = Number($("#heatRangeId").val());
+			heat.setOptions({blur:20, max:maxValue});
+		});
 		// Initialize the map
 		map = L.map( 'map' ).setView([0,0], 2);
 		L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -37,11 +42,12 @@
 	////// STAGE 2 - ZE PROCESSING //////
 
 	function stageTwo ( file ) {
-		var heat = L.heatLayer( [], {
-				blur: 20
+		heat = L.heatLayer( [], {
+				blur: 20,
+				max: 5.0
  			} ).addTo( map ),
 			SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
-
+		
 		// First, change tabs
 		$( 'body' ).addClass( 'working' );
 		$( '#intro' ).addClass( 'hidden' );
@@ -65,9 +71,14 @@
 				.on( 'node', {
 					'locations.*': function ( location ) {
 						// Add the new point... prevent lots of redraws by writing to _latlngs
+						
 						pointNo += 1;
-						status( 'Adding point #' + pointNo.toLocaleString() + ' (' + prettySize( filestream._offset ) + ' / ' + fileSize + ')' );
+						if(pointNo % 1000 == 0)
+						{
+							status( 'Adding point #' + pointNo.toLocaleString() + ' (' + prettySize( filestream._offset ) + ' / ' + fileSize + ')' );
+						}
 						heat._latlngs.push( [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] );
+						test = [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] ;
 					},
 					'locations': function () {
 						// Don't need any other data now
