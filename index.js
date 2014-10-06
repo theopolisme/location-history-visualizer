@@ -1,6 +1,7 @@
 ( function ( $, L, oboe, FileReadStream, prettySize ) {
 	var map;
 	var heat;
+	// data now stored in format [time, lat, lat]
 	var data =[];
 	var date = new Date();
 	var filterStruct = {
@@ -33,33 +34,25 @@
 	function stageOne () {
 		var dropzone;
 
-		// Add ability to change max value
-		$("#heatRangeId").change(function(e){
-			var maxValue = Number($("#heatRangeId").val());
-			heat.setOptions({blur:20, max:maxValue});
-		});
-		
-		$("#startDate").change(function(e){
-			var value = $("#startDate").val();
-			filterStruct.startDate = new Date(value);
-		});
-		
-		$("#endDate").change(function(e){
-			var value = $("#endDate").val();
-			filterStruct.endDate= new Date(value);
-		});
-		
-		$("#startTime").change(function(e){
-			var value = $("#startTime").val();
-			filterStruct.startTime= value;
-		});
-		
-		$("#endTime").change(function(e){
-			var value = $("#endTime").val();
-			filterStruct.endTime= value;
-		});
 		$(".updateable").change(function(e)
 		{
+			var maxValue = Number($("#heatRangeId").val());
+			var blur = Number($("#blurId").val());
+			var radius = Number($("#radiusId").val());
+			heat.setOptions({blur:blur, max:maxValue, radius:radius});
+			
+			var value = $("#startDate").val();
+			filterStruct.startDate = new Date(value);
+		
+			value = $("#endDate").val();
+			filterStruct.endDate= new Date(value);
+			
+			value = $("#startTime").val();
+			filterStruct.startTime= value;
+			
+			value = $("#endTime").val();
+			filterStruct.endTime= value;
+			
 			update();
 		});
 		
