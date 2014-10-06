@@ -105,35 +105,25 @@
 
 		function processFile ( file ) {
 			var pointNo = 0,
-				fileSize = prettySize( file.size ),
-				filestream = new FileReadStream( file );
-
+				fileSize = prettySize( file.size );
 			status( 'Preparing to import file (' + fileSize + ')...' );
-
-			oboe( filestream )
-				.on( 'node', {
-					'locations.*': function ( location ) {
-						// Add the new point... prevent lots of redraws by writing to _latlngs
-						
-						pointNo += 1;
-						if(pointNo % 1000 == 0)
-						{
-							status( 'Adding point #' + pointNo.toLocaleString() + ' (' + prettySize( filestream._offset ) + ' / ' + fileSize + ')' );
-						}
-						data.push( [new Date(Number(location.timestampMs)), location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] );
-					},
-					'locations': function () {
-						// Don't need any other data now
-						this.abort();
-						// Also, trigger the next step :D
-						dataActive = data;
-						renderMap();
-					}
-				} )
-				.on( 'fail', function () {
-					status( 'Something went wrong reading your JSON file. Ensure you\'re uploading a "direct-from-Google" JSON file and try again, or create an issue on GitHub if the problem persists.' );
-   				} );
-
+			reader = new FileReader();
+			reader.onprogress = function(evt)
+			{
+			if (evt.lengthComputable) {
+				 var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+				  status(percentLoaded +"% of " + fileSize + " loaded");
+			};
+			}
+			reader.onload = function(evt)
+			{
+				var tmp = JSON.parse(evt.target.result);
+				data = tmp.locations.map(function(location){return [new Date(Number(location.timestampMs)), location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ]});
+				activeData = data;
+				pointNo = data.length;
+				renderMap();
+			};
+			reader.readAsText(file);
 			
 			function renderMap () {
 				update();
