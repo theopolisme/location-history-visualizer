@@ -25,6 +25,10 @@ body.working {
 	display: none !important;
 }
 
+#forkme img {
+  z-index: 99999;
+}
+
 #map {
 	z-index: 0;
 }
