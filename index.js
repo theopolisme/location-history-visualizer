@@ -1,5 +1,4 @@
-( function ( $, L, oboe, FileReadStream, prettySize ) {
-	var map;
+( function ( $, L, prettySize ) {
 
 	// Start at the beginning
 	stageOne();
@@ -56,36 +55,36 @@
 		}
 
 		function processFile ( file ) {
-			var pointNo = 0,
-				fileSize = prettySize( file.size ),
-				filestream = new FileReadStream( file );
+			var fileSize = prettySize( file.size ),
+				reader = new FileReader();
 
 			status( 'Preparing to import file (' + fileSize + ')...' );
 
-			oboe( filestream )
-				.on( 'node', {
-					'locations.*': function ( location ) {
-						// Add the new point... prevent lots of redraws by writing to _latlngs
-						pointNo += 1;
-						status( 'Adding point #' + pointNo.toLocaleString() + ' (' + prettySize( filestream._offset ) + ' / ' + fileSize + ')' );
-						heat._latlngs.push( [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] );
-					},
-					'locations': function () {
-						// Don't need any other data now
-						this.abort();
-						// Also, trigger the next step :D
-						renderMap();
-					}
-				} )
-				.on( 'fail', function () {
-					status( 'Something went wrong reading your JSON file. Ensure you\'re uploading a "direct-from-Google" JSON file and try again, or create an issue on GitHub if the problem persists.' );
-   				} );
+			reader.onprogress = function ( e ) {
+				var percentLoaded = Math.round( ( e.loaded / e.total ) * 100 );
+				status( percentLoaded + '% of ' + fileSize + ' loaded...' );
+			};
 
-			function renderMap () {
+			reader.onload = function ( e ) {
+				var locations;
+
+				status( 'Generating map...' );
+
+				locations = JSON.parse( e.target.result ).locations;
+
+				heat._latlngs = locations.map( function ( location ) {
+					return [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ];
+				} );
+
 				heat.redraw();
-				// Stage 3!
-				stageThree( /* numberProcessed */ pointNo );
-			}
+				stageThree( /* numberProcessed */ locations.length );
+			};
+
+			reader.onerror = function () {
+				status( 'Something went wrong reading your JSON file. Ensure you\'re uploading a "direct-from-Google" JSON file and try again, or create an issue on GitHub if the problem persists. (error: ' + reader.error + ')' );
+			};
+
+			reader.readAsText( file );
 		}
 	}
 
@@ -109,4 +108,4 @@
 		} );
 	}
 
-}( jQuery, L, oboe, FileReadStream, prettySize ) );
+}( jQuery, L, prettySize ) );
