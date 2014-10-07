@@ -1,6 +1,7 @@
 ( function ( $, L, prettySize ) {
 	var map, heat,
 		heatOptions = {
+			opacity: 1,
 			radius: 25,
 			blur: 15
 		};
@@ -112,11 +113,12 @@
 		} );
 
 		function activateControls () {
-			var option,
+			var $heatmapLayer = $( '.leaflet-heatmap-layer' ),
 				originalHeatOptions = $.extend( {}, heatOptions ); // for reset
 
 			// Update values of the dom elements
 			function updateInputs () {
+				var option;
 				for ( option in heatOptions ) {
 					document.getElementById( option ).value = heatOptions[option];
 				};
@@ -125,14 +127,24 @@
 			updateInputs();
 
 			$( '.control' ).change( function () {
-				heatOptions[ this.id ] = Number( this.value );
-				heat.setOptions( heatOptions );
+				switch ( this.id ) {
+					case 'opacity':
+						// Hey, it works, okay?
+						$heatmapLayer.css( 'opacity', this.value );
+						break;
+					default:
+						heatOptions[ this.id ] = Number( this.value );
+						heat.setOptions( heatOptions );
+						break;
+				}
 			} );
 
 			$( '#reset' ).click( function () {
 				$.extend( heatOptions, originalHeatOptions );
 				updateInputs();
 				heat.setOptions( heatOptions );
+				// Reset opacity too
+				$heatmapLayer.css( 'opacity', originalHeatOptions.opacity );
 			} );
 		}
 	}
