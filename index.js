@@ -1,4 +1,9 @@
 ( function ( $, L, prettySize ) {
+	var map, heat,
+		heatOptions = {
+			radius: 25,
+			blur: 15
+		};
 
 	// Start at the beginning
 	stageOne();
@@ -37,9 +42,7 @@
 	////// STAGE 2 - ZE PROCESSING //////
 
 	function stageTwo ( file ) {
-		var heat = L.heatLayer( [], {
-				blur: 20
- 			} ).addTo( map ),
+		heat = L.heatLayer( [], heatOptions ).addTo( map ),
 			SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
 
 		// First, change tabs
@@ -105,7 +108,33 @@
 		$done.one( 'click', function () {
 			$( 'body' ).addClass( 'map-active' );
 			$done.fadeOut();
+			activateControls();
 		} );
+
+		function activateControls () {
+			var option,
+				originalHeatOptions = $.extend( {}, heatOptions ); // for reset
+
+			// Update values of the dom elements
+			function updateInputs () {
+				for ( option in heatOptions ) {
+					document.getElementById( option ).value = heatOptions[option];
+				};
+			}
+
+			updateInputs();
+
+			$( '.control' ).change( function () {
+				heatOptions[ this.id ] = Number( this.value );
+				heat.setOptions( heatOptions );
+			} );
+
+			$( '#reset' ).click( function () {
+				$.extend( heatOptions, originalHeatOptions );
+				updateInputs();
+				heat.setOptions( heatOptions );
+			} );
+		}
 	}
 
 }( jQuery, L, prettySize ) );
