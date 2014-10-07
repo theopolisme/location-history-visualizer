@@ -84,6 +84,11 @@ h2 {
   position: absolute;
   overflow: hidden;
   bottom: -200px;
+  /* We set a specific height here so that revealing only the top part of the
+  div will always reveal the *correct* top part. When we expand it later (on hover),
+  we set height back to auto, so that all the content is shown correctly. Slightly
+  hacky, yes, but it appears to be working in all browsers. A Good Thing. */
+  height: 171px;
   left: 0px;
   margin: 0px 10px;
   padding: 3px 16px 5px;
@@ -92,12 +97,13 @@ h2 {
 }
 
 .map-active #controls {
-  bottom: -125px;
+  bottom: -145px;
 }
 
 #controls:hover {
   bottom: 0px;
   left: 0px;
+  height: auto;
   background-color: rgba(255,255,255,0.9);
 }
 
