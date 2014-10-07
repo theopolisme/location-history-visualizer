@@ -3,7 +3,6 @@ body {
     margin: 0;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
-    overflow: hidden;
 }
 
 html, body, #map {
@@ -13,6 +12,13 @@ html, body, #map {
 
 body.working {
 	cursor: progress;
+}
+
+.visualizer {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .hidden {
@@ -116,7 +122,7 @@ h2 {
 }
 
 #controls .control-block {
-    height: 20px;
+    clear: both;
 }
 
 #controls .control-block input {
