@@ -24,7 +24,7 @@
 		// Initialize the dropzone
 		dropzone = new Dropzone( document.body, {
 			url: '/',
-			previewsContainer: '#null',
+			previewsContainer: document.createElement( 'div' ), // >> /dev/null
 			clickable: false,
 			accept: function ( file, done ) {
 				stageTwo( file );
