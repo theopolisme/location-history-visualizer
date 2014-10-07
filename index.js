@@ -1,5 +1,9 @@
-( function ( $, L, oboe, FileReadStream, prettySize ) {
-	var map;
+( function ( $, L, prettySize ) {
+	var map, heat,
+		heatOptions = {
+			radius: 25,
+			blur: 15
+		};
 
 	// Start at the beginning
 	stageOne();
@@ -13,7 +17,8 @@
 		map = L.map( 'map' ).setView([0,0], 2);
 		L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: 'location-history-visualizer is open source and available <a href="https://github.com/theopolisme/location-history-visualizer">on GitHub</a>. Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors.',
-			maxZoom: 18
+			maxZoom: 18,
+			minZoom: 2
 		} ).addTo( map );
 
 		// Initialize the dropzone
@@ -37,9 +42,7 @@
 	////// STAGE 2 - ZE PROCESSING //////
 
 	function stageTwo ( file ) {
-		var heat = L.heatLayer( [], {
-				blur: 20
- 			} ).addTo( map ),
+		heat = L.heatLayer( [], heatOptions ).addTo( map ),
 			SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
 
 		// First, change tabs
@@ -55,36 +58,36 @@
 		}
 
 		function processFile ( file ) {
-			var pointNo = 0,
-				fileSize = prettySize( file.size ),
-				filestream = new FileReadStream( file );
+			var fileSize = prettySize( file.size ),
+				reader = new FileReader();
 
 			status( 'Preparing to import file (' + fileSize + ')...' );
 
-			oboe( filestream )
-				.on( 'node', {
-					'locations.*': function ( location ) {
-						// Add the new point... prevent lots of redraws by writing to _latlngs
-						pointNo += 1;
-						status( 'Adding point #' + pointNo.toLocaleString() + ' (' + prettySize( filestream._offset ) + ' / ' + fileSize + ')' );
-						heat._latlngs.push( [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] );
-					},
-					'locations': function () {
-						// Don't need any other data now
-						this.abort();
-						// Also, trigger the next step :D
-						renderMap();
-					}
-				} )
-				.on( 'fail', function () {
-					status( 'Something went wrong reading your JSON file. Ensure you\'re uploading a "direct-from-Google" JSON file and try again, or create an issue on GitHub if the problem persists.' );
-   				} );
+			reader.onprogress = function ( e ) {
+				var percentLoaded = Math.round( ( e.loaded / e.total ) * 100 );
+				status( percentLoaded + '% of ' + fileSize + ' loaded...' );
+			};
 
-			function renderMap () {
+			reader.onload = function ( e ) {
+				var locations;
+
+				status( 'Generating map...' );
+
+				locations = JSON.parse( e.target.result ).locations;
+
+				heat._latlngs = locations.map( function ( location ) {
+					return [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ];
+				} );
+
 				heat.redraw();
-				// Stage 3!
-				stageThree( /* numberProcessed */ pointNo );
-			}
+				stageThree( /* numberProcessed */ locations.length );
+			};
+
+			reader.onerror = function () {
+				status( 'Something went wrong reading your JSON file. Ensure you\'re uploading a "direct-from-Google" JSON file and try again, or create an issue on GitHub if the problem persists. (error: ' + reader.error + ')' );
+			};
+
+			reader.readAsText( file );
 		}
 	}
 
@@ -105,7 +108,33 @@
 		$done.one( 'click', function () {
 			$( 'body' ).addClass( 'map-active' );
 			$done.fadeOut();
+			activateControls();
 		} );
+
+		function activateControls () {
+			var option,
+				originalHeatOptions = $.extend( {}, heatOptions ); // for reset
+
+			// Update values of the dom elements
+			function updateInputs () {
+				for ( option in heatOptions ) {
+					document.getElementById( option ).value = heatOptions[option];
+				};
+			}
+
+			updateInputs();
+
+			$( '.control' ).change( function () {
+				heatOptions[ this.id ] = Number( this.value );
+				heat.setOptions( heatOptions );
+			} );
+
+			$( '#reset' ).click( function () {
+				$.extend( heatOptions, originalHeatOptions );
+				updateInputs();
+				heat.setOptions( heatOptions );
+			} );
+		}
 	}
 
-}( jQuery, L, oboe, FileReadStream, prettySize ) );
+}( jQuery, L, prettySize ) );
