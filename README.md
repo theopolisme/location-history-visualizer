@@ -1,6 +1,6 @@
 # location-history-visualizer
 
-**Available online: [theopolisme.github.io/location-history-visualizer](http://theopolisme.github.io/location-history-visualizer)**
+**Available online: [theopolis.me/location-history-visualizer](http://theopolis.me/location-history-visualizer)**
 
 A tool for visualizing your complete, consolidated, collected Google [Location History](https://google.com/locationhistory).
 
