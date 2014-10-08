@@ -74,7 +74,15 @@
 
 				status( 'Generating map...' );
 
-				locations = JSON.parse( e.target.result ).locations;
+				try {
+					locations = JSON.parse( e.target.result ).locations;
+					if ( !locations || locations.length === 0 ) {
+						throw new ReferenceError( 'No location data found.' );
+					}
+				} catch ( ex ) {
+					status( 'Something went wrong generating your map. Ensure you\'re uploading a Google Takeout JSON file that contains location data and try again, or create an issue on GitHub if the problem persists. (error: ' + ex.message + ')' );
+					return;
+				}
 
 				heat._latlngs = locations.map( function ( location ) {
 					return [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ];
