@@ -16,7 +16,7 @@
 
 		// Initialize the map
 		map = L.map( 'map' ).setView([0,0], 2);
-			L.tileLayer( ('https:' == document.location.protocol ? 'https://' : 'http://') + '{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		L.tileLayer( ('https:' == document.location.protocol ? 'https://' : 'http://') + '{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: 'location-history-visualizer is open source and available <a href="https://github.com/theopolisme/location-history-visualizer">on GitHub</a>. Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors.',
 			maxZoom: 18,
 			minZoom: 2
