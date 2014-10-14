@@ -83,10 +83,25 @@
 					status( 'Something went wrong generating your map. Ensure you\'re uploading a Google Takeout JSON file that contains location data and try again, or create an issue on GitHub if the problem persists. (error: ' + ex.message + ')' );
 					return;
 				}
+				
+				var sw = [-Infinity, -Infinity]
+          			    , se = [Infinity, Infinity];
 
 				heat._latlngs = locations.map( function ( location ) {
+					
+					var lat = location.latitudeE7 * SCALAR_E7
+				            , lng = location.longitudeE7 * SCALAR_E7
+				            ;
+					
+					sw[0] = Math.max(lat, sw[0]);
+				        sw[1] = Math.max(lng, sw[1]);
+				        se[0] = Math.min(lat, se[0]);
+				        se[1] = Math.min(lng, se[1]);
+					
 					return [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ];
 				} );
+				
+				map.fitBounds([sw, se]);
 
 				heat.redraw();
 				stageThree( /* numberProcessed */ locations.length );
