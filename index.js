@@ -9,8 +9,6 @@
 	// Start at the beginning
 	stageOne();
 
-	////// STAGE 1 - ZE VELCOME UNT ZE UPLOAD //////
-
 	function stageOne () {
 		var dropzone;
 
@@ -39,8 +37,6 @@
 			dropzone.disable();
 		} );
 	}
-
-	////// STAGE 2 - ZE PROCESSING //////
 
 	function stageTwo ( file ) {
 		heat = L.heatLayer( [], heatOptions ).addTo( map ),
@@ -100,8 +96,6 @@
 		}
 	}
 
-	////// STAGE 3 - THEY GROW UP SO FAST //////
-
 	function stageThree ( numberProcessed ) {
 		var $done = $( '#done' );
 
@@ -128,8 +122,10 @@
 			function updateInputs () {
 				var option;
 				for ( option in heatOptions ) {
-					document.getElementById( option ).value = heatOptions[option];
-				};
+					if ( heatOptions.hasOwnProperty( option ) ) {
+						document.getElementById( option ).value = heatOptions[option];
+					}
+				}
 			}
 
 			updateInputs();
