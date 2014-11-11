@@ -9,8 +9,6 @@
 	// Start at the beginning
 	stageOne();
 
-	////// STAGE 1 - ZE VELCOME UNT ZE UPLOAD //////
-
 	function stageOne () {
 		var dropzone;
 
@@ -40,11 +38,8 @@
 		} );
 	}
 
-	////// STAGE 2 - ZE PROCESSING //////
-
 	function stageTwo ( file ) {
-		heat = L.heatLayer( [], heatOptions ).addTo( map ),
-			SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
+		heat = L.heatLayer( [], heatOptions ).addTo( map );
 
 		// First, change tabs
 		$( 'body' ).addClass( 'working' );
@@ -64,32 +59,63 @@
 
 			status( 'Preparing to import file (' + fileSize + ')...' );
 
+			function getLocationDataFromJson ( data ) {
+				var SCALAR_E7 = 0.0000001, // Since Google Takeout stores latlngs as integers
+					locations = JSON.parse( data ).locations;
+
+				if ( !locations || locations.length === 0 ) {
+					throw new ReferenceError( 'No location data found.' );
+				}
+
+				return locations.map( function ( location ) {
+					return [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ];
+				} );
+			}
+
+			function getLocationDataFromKml ( data ) {
+				var KML_DATA_REGEXP = /<when>(.*?)<\/when>\s*<gx:coord>(\S*)\s(\S*)\s(\S*)<\/gx:coord>/g,
+					locations = [],
+					match = KML_DATA_REGEXP.exec( data );
+
+				// match
+				//  [1] ISO 8601 timestamp
+				//  [2] longitude
+				//  [3] latitude
+				//  [4] altitude (not currently provided by Location History)
+
+				while ( match !== null ) {
+					locations.push( [ Number( match[3] ), Number( match[2] ) ] );
+					match = KML_DATA_REGEXP.exec( data );
+				}
+
+				return locations;
+			}
+
 			reader.onprogress = function ( e ) {
 				var percentLoaded = Math.round( ( e.loaded / e.total ) * 100 );
 				status( percentLoaded + '% of ' + fileSize + ' loaded...' );
 			};
 
 			reader.onload = function ( e ) {
-				var locations;
+				var latlngs;
 
 				status( 'Generating map...' );
 
 				try {
-					locations = JSON.parse( e.target.result ).locations;
-					if ( !locations || locations.length === 0 ) {
-						throw new ReferenceError( 'No location data found.' );
+					if ( /.kml$/.test( file.name ) ) {
+						latlngs = getLocationDataFromKml( e.target.result );
+					} else {
+						latlngs = getLocationDataFromJson( e.target.result );
 					}
 				} catch ( ex ) {
 					status( 'Something went wrong generating your map. Ensure you\'re uploading a Google Takeout JSON file that contains location data and try again, or create an issue on GitHub if the problem persists. (error: ' + ex.message + ')' );
 					return;
 				}
 
-				heat._latlngs = locations.map( function ( location ) {
-					return [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ];
-				} );
+				heat._latlngs = latlngs;
 
 				heat.redraw();
-				stageThree( /* numberProcessed */ locations.length );
+				stageThree( /* numberProcessed */ latlngs.length );
 			};
 
 			reader.onerror = function () {
@@ -99,8 +125,6 @@
 			reader.readAsText( file );
 		}
 	}
-
-	////// STAGE 3 - THEY GROW UP SO FAST //////
 
 	function stageThree ( numberProcessed ) {
 		var $done = $( '#done' );
@@ -128,8 +152,10 @@
 			function updateInputs () {
 				var option;
 				for ( option in heatOptions ) {
-					document.getElementById( option ).value = heatOptions[option];
-				};
+					if ( heatOptions.hasOwnProperty( option ) ) {
+						document.getElementById( option ).value = heatOptions[option];
+					}
+				}
 			}
 
 			updateInputs();
