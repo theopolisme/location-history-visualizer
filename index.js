@@ -102,7 +102,7 @@
 				status( 'Generating map...' );
 
 				try {
-					if ( /.kml$/.test( file.name ) ) {
+					if ( /\.kml$/i.test( file.name ) ) {
 						latlngs = getLocationDataFromKml( e.target.result );
 					} else {
 						latlngs = getLocationDataFromJson( e.target.result );
