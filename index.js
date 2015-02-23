@@ -37,6 +37,30 @@
 			stageTwo( this.files[0] );
 			dropzone.disable();
 		} );
+
+		$( '#go' ).on('click', function() {
+			$(this).html("Loading...").prop('disabled', true);
+			$( '#text' ).prop('disabled', true);
+			var filename = $( '#text' ).val();
+			$('#errormessage').hide();
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', filename, true);
+			xhr.responseType = 'blob';
+			xhr.onload = function(e) {
+				if (this.status == 200) {
+					var myBlob = this.response;
+					// myBlob is now the blob that the object URL pointed to.
+					stageTwo( myBlob );
+				} else {
+					// something went wrong
+					$('#errormessage').html("Error while loading the JSON file!").show();
+					$("input").prop('disabled', false);
+					$( '#go' ).html("Go").prop('disabled', false);
+				}
+			};
+			xhr.send();
+			dropzone.disable();
+		});
 	}
 
 	function stageTwo ( file ) {
