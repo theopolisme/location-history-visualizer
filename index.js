@@ -34,19 +34,24 @@
 
 		// For mobile browsers, allow direct file selection as well
 		$( '#file' ).change( function () {
-			stageTwo( this.files[0] );
+			stageTwo( this.files[0], document.getElementById("fromDate").value, document.getElementById("toDate").value );
 			dropzone.disable();
 		} );
 	}
 
-	function stageTwo ( file ) {
+	function stageTwo ( file, fromDate, toDate ) {
 		heat = L.heatLayer( [], heatOptions ).addTo( map );
 
 		// First, change tabs
 		$( 'body' ).addClass( 'working' );
 		$( '#intro' ).addClass( 'hidden' );
 		$( '#working' ).removeClass( 'hidden' );
-
+		
+		if(fromDate && toDate){
+			fromDate=new Date(document.getElementById("fromDate").value).getTime();
+			toDate=new Date(document.getElementById("toDate").value).getTime();
+		}
+		
 		// Now start working!
 		processFile( file );
 
@@ -63,7 +68,15 @@
 			function getLocationDataFromJson ( data ) {
 				var SCALAR_E7 = 0.0000001, // Since Google Takeout stores latlngs as integers
 					locations = JSON.parse( data ).locations;
-
+				
+				if(fromDate && toDate) {
+					i = locations.length;
+					while (i--) {
+						if (locations[i].timestampMs < fromDate || locations[i].timestampMs > toDate)
+							locations.splice(i, 1);
+					}
+				}
+					
 				if ( !locations || locations.length === 0 ) {
 					throw new ReferenceError( 'No location data found.' );
 				}
@@ -77,18 +90,24 @@
 				var KML_DATA_REGEXP = /<when>(.*?)<\/when>\s*<gx:coord>(\S*)\s(\S*)\s(\S*)<\/gx:coord>/g,
 					locations = [],
 					match = KML_DATA_REGEXP.exec( data );
-
 				// match
 				//  [1] ISO 8601 timestamp
 				//  [2] longitude
 				//  [3] latitude
 				//  [4] altitude (not currently provided by Location History)
-
-				while ( match !== null ) {
-					locations.push( [ Number( match[3] ), Number( match[2] ) ] );
-					match = KML_DATA_REGEXP.exec( data );
+				if(fromDate && toDate) {
+					while ( match !== null ) {
+						if(new Date(match[1]).getTime() >= fromDate && new Date(match[1]).getTime() <= toDate)
+							locations.push( [ Number( match[3] ), Number( match[2] ) ] );
+						match = KML_DATA_REGEXP.exec( data );
+					}
 				}
-
+				else{
+					while ( match !== null ) {
+						locations.push( [ Number( match[3] ), Number( match[2] ) ] );
+						match = KML_DATA_REGEXP.exec( data );
+					}
+				}
 				return locations;
 			}
 
