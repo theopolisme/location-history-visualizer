@@ -4,6 +4,7 @@
     <title>location-history-visualizer</title>
     <link rel="stylesheet" href="index.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css"/>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 </head>
 <body>
 <div class="visualizer">
@@ -21,7 +22,11 @@
                 <p class="fallback">Alternatively, select your <b>LocationHistory.json</b> file directly: <input name="file" type="file" id="file"></input></p>
                 <hr>
                 <p><i>Experimental (even faster!) import method:</i> Instead of going through Google Takeout, simply browse to the <a href="https://maps.google.com/locationhistory/kml?startTime=0&endTime=9000000000000" target="_blank">Google Location History KML API endpoint</a>. A file (<b>history-12-31-1969.kml</b>) will be downloaded &ndash; just drag and drop it onto this page, and we're off! <i>Note:</i> This uses a non-public Google API and as such may cease to work at any point. Your mileage may vary.</p>
-                <p class="credit">A project by <a href="https://theopolis.me" target="_blank">@theopolisme</a>. Made in 2014 in Memphis, Tennessee.</p>
+                <hr>
+                <p>You can also view only the location history <b>between two dates</b>:<br/>
+                	From: <input type="text" id="fromDate"> - To: <input type="text" id="toDate">
+                </p>
+                <hr>
             </div>
 
             <!-- Shown in interim while processing is in progress -->
@@ -88,6 +93,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/3.8.4/dropzone.min.js"></script>
 <script src="lib/leaflet.heat.min.js"></script>
@@ -103,6 +109,10 @@
 
   ga('create', 'UA-55418641-1', 'auto');
   ga('send', 'pageview');
+  $(function() {
+    $("#fromDate").datepicker();
+    $("#toDate").datepicker();
+  });
 </script>
 </body>
 </html>
