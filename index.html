@@ -15,13 +15,16 @@
         <div class="content">
             <!-- Intro, before data has been uploaded -->
             <div id="intro" class="content-box">
-                <h2>location-history-visualizer</h2>
+                <h2>Location History Visualizer</h2>
+                <div class="note">
+                    <strong>Note:</strong> This tool only generates heatmaps. If you're looking for minute-by-minute analysis of your Location History, including accuracy information, location-based search, advanced filtering and measurement tools, and more, check out <strong><a href="https://theopatt.com/lhv-pro">Location History Visualizer Pro</a></strong>.
+                </div>
                 <p>Welcome to <b>location-history-visualizer</b>, a tool for visualizing your collected Google <a href="https://google.com/locationhistory" target="_blank">Location History</a> data with heatmaps. <i>Don't worry&mdash;all processing and visualization happens directly on your computer, so rest assured that nobody is able to access your Location History but you... and Google, of course.</i> ^.^</p>
                 <p>To start off, you'll need to go to <a href="https://google.com/takeout" target="_blank">Google Takeout</a> to download your Location History data: on that page, deselect everything except Location History by clicking "Select none" and then reselecting "Location History". Then hit "Next" and, finally, click "Create archive". Once the archive has been created, click "Download". Unzip the downloaded file, and open the "Location History" folder within. <b>Then, drag and drop <i>LocationHistory.json</i> from inside that folder onto this page.</b> Let the visualization begin!</p>
                 <p class="fallback">Alternatively, select your <b>LocationHistory.json</b> file directly: <input name="file" type="file" id="file"></input></p>
                 <hr>
                 <p><i>Experimental (even faster!) import method:</i> Instead of going through Google Takeout, simply browse to the <a href="https://maps.google.com/locationhistory/kml?startTime=0&endTime=9000000000000" target="_blank">Google Location History KML API endpoint</a>. A file (<b>history-12-31-1969.kml</b>) will be downloaded &ndash; just drag and drop it onto this page, and we're off! <i>Note:</i> This uses a non-public Google API and as such may cease to work at any point. Your mileage may vary.</p>
-                <p class="credit">A project by <a href="https://theopolis.me" target="_blank">@theopolisme</a>. Made in 2014 in Memphis, Tennessee.</p>
+                <p class="credit">A project by <a href="https://theopolis.me" target="_blank">@theopolisme</a>. Made in 2014 in Memphis, Tennessee (updated 2015).</p>
             </div>
 
             <!-- Shown in interim while processing is in progress -->
@@ -62,8 +65,12 @@
             <input type="range" min="1" max="25" id="blur" class="control">
         </div>
         <div class="control-block">
-            <label for="opacity">Heat opacity</label>
-            <input type="range" min="0" max="1" step="0.05" id="opacity" class="control">
+            <label for="heatOpacity">Heat opacity</label>
+            <input type="range" min="0" max="1" step="0.05" id="heatOpacity" class="control">
+        </div>
+        <div class="control-block">
+            <label for="tileOpacity">Map opacity</label>
+            <input type="range" min="0" max="1" step="0.05" id="tileOpacity" class="control">
         </div>
         <div class="control-block actions">
             <button id="reset">Reset to defaults</button>

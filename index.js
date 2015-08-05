@@ -1,7 +1,8 @@
 ( function ( $, L, prettySize ) {
 	var map, heat,
 		heatOptions = {
-			opacity: 1,
+			tileOpacity: 1,
+			heatOpacity: 1,
 			radius: 25,
 			blur: 15
 		};
@@ -145,7 +146,8 @@
 		} );
 
 		function activateControls () {
-			var $heatmapLayer = $( '.leaflet-heatmap-layer' ),
+			var $tileLayer = $( '.leaflet-tile-pane' ),
+				$heatmapLayer = $( '.leaflet-heatmap-layer' ),
 				originalHeatOptions = $.extend( {}, heatOptions ); // for reset
 
 			// Update values of the dom elements
@@ -162,8 +164,10 @@
 
 			$( '.control' ).change( function () {
 				switch ( this.id ) {
-					case 'opacity':
-						// Hey, it works, okay?
+					case 'tileOpacity':
+						$tileLayer.css( 'opacity', this.value );
+						break;
+					case 'heatOpacity':
 						$heatmapLayer.css( 'opacity', this.value );
 						break;
 					default:
@@ -178,7 +182,8 @@
 				updateInputs();
 				heat.setOptions( heatOptions );
 				// Reset opacity too
-				$heatmapLayer.css( 'opacity', originalHeatOptions.opacity );
+				$heatmapLayer.css( 'opacity', originalHeatOptions.heatOpacity );
+				$tileLayer.css( 'opacity', originalHeatOptions.tileOpacity );
 			} );
 		}
 	}
