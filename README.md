@@ -1,6 +1,6 @@
 # location-history-visualizer
 
-**Available online: [theopolis.me/location-history-visualizer](http://theopolis.me/location-history-visualizer)**
+**Available online: [locationhistoryvisualizer.com/heatmap/](https://locationhistoryvisualizer.com/heatmap/)**
 
 A tool for visualizing your complete, consolidated, collected Google [Location History](https://google.com/locationhistory).
 
