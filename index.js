@@ -11,13 +11,13 @@
 		$( '#currentStatus' ).text( message );
 	}
 	// Start at the beginning
-	stageOne(  );
+	stageOne();
 
-	function stageOne(  ) {
+	function stageOne() {
 		var dropzone;
 
 		// Initialize the map
-		map = L.map( 'map' ).setView( [0, 0], 2 );
+		map = L.map( 'map' ).setView( [ 0, 0 ], 2 );
 		L.tileLayer( 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: 'location-history-visualizer is open source and available <a href="https://github.com/theopolisme/location-history-visualizer">on GitHub</a>. Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors.',
 			maxZoom: 18,
@@ -31,14 +31,14 @@
 			clickable: false,
 			accept: function ( file, done ) {
 				stageTwo( file );
-				dropzone.disable(  ); // Your job is done, buddy
+				dropzone.disable(); // Your job is done, buddy
 			}
 		} );
 
 		// For mobile browsers, allow direct file selection as well
-		$( '#file' ).change( function (  ) {
-			stageTwo( this.files[0] );
-			dropzone.disable(  );
+		$( '#file' ).change( function () {
+			stageTwo( this.files[ 0 ] );
+			dropzone.disable();
 		} );
 	}
 
@@ -60,16 +60,16 @@
 		$( '#intro' ).addClass( 'hidden' );
 		$( '#working' ).removeClass( 'hidden' );
 		var latlngs = [];
-		var os = new oboe(  );
+		var os = new oboe();
 		os.node( 'locations.*', function ( location ) {
 			var SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
-			if ( type === 'json' ) latlngs.push( [location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7] );
+			if ( type === 'json' ) latlngs.push( [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] );
 			return oboe.drop;
-		} ).done( function (  ) {
+		} ).done( function () {
 			status( 'Generating map...' );
 			heat._latlngs = latlngs;
 
-			heat.redraw(  );
+			heat.redraw();
 			stageThree(  /* numberProcessed */ latlngs.length );
 
 		} );
@@ -91,33 +91,33 @@
 		$done.removeClass( 'hidden' );
 
 		// Update count
-		$( '#numberProcessed' ).text( numberProcessed.toLocaleString(  ) );
+		$( '#numberProcessed' ).text( numberProcessed.toLocaleString() );
 
 		// Fade away when clicked
-		$done.one( 'click', function (  ) {
+		$done.one( 'click', function () {
 			$( 'body' ).addClass( 'map-active' );
-			$done.fadeOut(  );
-			activateControls(  );
+			$done.fadeOut();
+			activateControls();
 		} );
 
-		function activateControls(  ) {
+		function activateControls() {
 			var $tileLayer = $( '.leaflet-tile-pane' ),
 				$heatmapLayer = $( '.leaflet-heatmap-layer' ),
 				originalHeatOptions = $.extend( {}, heatOptions ); // for reset
 
 			// Update values of the dom elements
-			function updateInputs(  ) {
+			function updateInputs() {
 				var option;
 				for ( option in heatOptions ) {
 					if ( heatOptions.hasOwnProperty( option ) ) {
-						document.getElementById( option ).value = heatOptions[option];
+						document.getElementById( option ).value = heatOptions[ option ];
 					}
 				}
 			}
 
-			updateInputs(  );
+			updateInputs();
 
-			$( '.control' ).change( function (  ) {
+			$( '.control' ).change( function () {
 				switch ( this.id ) {
 					case 'tileOpacity':
 						$tileLayer.css( 'opacity', this.value );
@@ -126,15 +126,15 @@
 						$heatmapLayer.css( 'opacity', this.value );
 						break;
 					default:
-						heatOptions[this.id] = Number( this.value );
+						heatOptions[ this.id ] = Number( this.value );
 						heat.setOptions( heatOptions );
 						break;
 				}
 			} );
 
-			$( '#reset' ).click( function (  ) {
+			$( '#reset' ).click( function () {
 				$.extend( heatOptions, originalHeatOptions );
-				updateInputs(  );
+				updateInputs();
 				heat.setOptions( heatOptions );
 				// Reset opacity too
 				$heatmapLayer.css( 'opacity', originalHeatOptions.heatOpacity );
@@ -153,8 +153,8 @@
 		var offset = 0;
 		var self = this; // we need a reference to the current object
 		var chunkReaderBlock = null;
-		var startTime = Date.now(  );
-		var endTime = Date.now(  );
+		var startTime = Date.now();
+		var endTime = Date.now();
 		var readEventHandler = function ( evt ) {
 			if ( evt.target.error == null ) {
 				offset += evt.target.result.length;
@@ -175,7 +175,7 @@
 		}
 
 		chunkReaderBlock = function ( _offset, length, _file ) {
-			var r = new FileReader(  );
+			var r = new FileReader();
 			var blob = _file.slice( _offset, length + _offset );
 			r.onload = readEventHandler;
 			r.readAsText( blob );
@@ -187,7 +187,7 @@
 
 	function parseKMLFile( file ) {
 		var fileSize = prettySize( file.size );
-		var reader = new FileReader(  );
+		var reader = new FileReader();
 		reader.onprogress = function ( e ) {
 			var percentLoaded = Math.round( ( e.loaded / e.total ) * 100 );
 			status( percentLoaded + '% of ' + fileSize + ' loaded...' );
@@ -198,10 +198,10 @@
 			status( 'Generating map...' );
 			latlngs = getLocationDataFromKml( e.target.result );
 			heat._latlngs = latlngs;
-			heat.redraw(  );
+			heat.redraw();
 			stageThree( latlngs.length );
 		}
-		reader.onerror = function (  ) {
+		reader.onerror = function () {
 			status( 'Something went wrong reading your JSON file. Ensure you\'re uploading a "direct-from-Google" JSON file and try again, or create an issue on GitHub if the problem persists. ( error: ' + reader.error + ' )' );
 		}
 		reader.readAsText( file );
@@ -213,12 +213,12 @@
 			match = KML_DATA_REGEXP.exec( data );
 
 		// match
-		//  [1] ISO 8601 timestamp
-		//  [2] longitude
-		//  [3] latitude
-		//  [4] altitude ( not currently provided by Location History )
+		//  [ 1 ] ISO 8601 timestamp
+		//  [ 2 ] longitude
+		//  [ 3 ] latitude
+		//  [ 4 ] altitude ( not currently provided by Location History )
 		while ( match !== null ) {
-			locations.push( [Number( match[3] ), Number( match[2] )] );
+			locations.push( [ Number( match[ 3 ] ), Number( match[ 2 ] ) ] );
 			match = KML_DATA_REGEXP.exec( data );
 		}
 
