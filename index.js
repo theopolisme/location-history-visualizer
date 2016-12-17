@@ -147,7 +147,7 @@
 	Break file into chunks and emit 'data' to oboe instance
 	*/
 
-	function parseFile( file, oboeInstance ) {
+	function parseJSONFile( file, oboeInstance ) {
 		var fileSize = file.size;
 		var chunkSize = 512 * 1024; // bytes
 		var offset = 0;
