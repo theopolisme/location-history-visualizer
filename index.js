@@ -64,17 +64,9 @@
 		os.node('locations.*', function (location) {
 			var SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
 			if (type === 'json') latlngs.push([location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7]);
-			else if (type === 'kml') {
-				var KML_DATA_REGEXP = /<when>(.*?)<\/when>\s*<gx:coord>(\S*)\s(\S*)\s(\S*)<\/gx:coord>/g;
-				var match = KML_DATA_REGEXP.exec(location);
-				if (match != null) {
-					latlngs.push([Number(match[3]), Number(match[2])]);
-				}
-			}
 			return oboe.drop;
 		}).done(function () {
 			status('Generating map...');
-			console.log(latlngs);
 			heat._latlngs = latlngs;
 
 			heat.redraw();
@@ -85,7 +77,8 @@
 
 		status('Preparing to import file (' + fileSize + ')...');
 		// Now start working!
-		parseFile(file, os);
+		if (type === 'json') parseJSONFile(file, os);
+		if (type === 'kml') parseKMLFile(file);
 
 	}
 
@@ -126,16 +119,16 @@
 
 			$('.control').change(function () {
 				switch (this.id) {
-				case 'tileOpacity':
-					$tileLayer.css('opacity', this.value);
-					break;
-				case 'heatOpacity':
-					$heatmapLayer.css('opacity', this.value);
-					break;
-				default:
-					heatOptions[this.id] = Number(this.value);
-					heat.setOptions(heatOptions);
-					break;
+					case 'tileOpacity':
+						$tileLayer.css('opacity', this.value);
+						break;
+					case 'heatOpacity':
+						$heatmapLayer.css('opacity', this.value);
+						break;
+					default:
+						heatOptions[this.id] = Number(this.value);
+						heat.setOptions(heatOptions);
+						break;
 				}
 			});
 
@@ -191,4 +184,45 @@
 		// now let's start the read with the first block
 		chunkReaderBlock(offset, chunkSize, file);
 	}
+
+	function parseKMLFile(file) {
+		var fileSize = prettySize(file.size);
+		var reader = new FileReader();
+		reader.onprogress = function (e) {
+			var percentLoaded = Math.round((e.loaded / e.total) * 100);
+			status(percentLoaded + '% of ' + fileSize + ' loaded...');
+		};
+
+		reader.onload = function (e) {
+			var latlngs;
+			status('Generating map...');
+			latlngs = getLocationDataFromKml(e.target.result);
+			heat._latlngs = latlngs;
+			heat.redraw();
+			stageThree(latlngs.length);
+		}
+		reader.onerror = function () {
+			status('Something went wrong reading your JSON file. Ensure you\'re uploading a "direct-from-Google" JSON file and try again, or create an issue on GitHub if the problem persists. (error: ' + reader.error + ')');
+		}
+		reader.readAsText(file);
+	}
+
+	function getLocationDataFromKml(data) {
+		var KML_DATA_REGEXP = /<when>(.*?)<\/when>\s*<gx:coord>(\S*)\s(\S*)\s(\S*)<\/gx:coord>/g,
+			locations = [],
+			match = KML_DATA_REGEXP.exec(data);
+
+		// match
+		//  [1] ISO 8601 timestamp
+		//  [2] longitude
+		//  [3] latitude
+		//  [4] altitude (not currently provided by Location History)
+		while (match !== null) {
+			locations.push([Number(match[3]), Number(match[2])]);
+			match = KML_DATA_REGEXP.exec(data);
+		}
+
+		return locations;
+	}
+
 }(jQuery, L, prettySize));
