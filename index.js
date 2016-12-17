@@ -13,11 +13,11 @@
 	// Start at the beginning
 	stageOne();
 
-	function stageOne() {
+	function stageOne () {
 		var dropzone;
 
 		// Initialize the map
-		map = L.map( 'map' ).setView( [ 0, 0 ], 2 );
+		map = L.map( 'map' ).setView( [0,0], 2 );
 		L.tileLayer( 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: 'location-history-visualizer is open source and available <a href="https://github.com/theopolisme/location-history-visualizer">on GitHub</a>. Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors.',
 			maxZoom: 18,
@@ -37,12 +37,12 @@
 
 		// For mobile browsers, allow direct file selection as well
 		$( '#file' ).change( function () {
-			stageTwo( this.files[ 0 ] );
+			stageTwo( this.files[0] );
 			dropzone.disable();
 		} );
 	}
 
-	function stageTwo( file ) {
+	function stageTwo ( file ) {
 		heat = L.heatLayer( [], heatOptions ).addTo( map );
 		var type;
 		try {
@@ -82,7 +82,7 @@
 
 	}
 
-	function stageThree( numberProcessed ) {
+	function stageThree ( numberProcessed ) {
 		var $done = $( '#done' );
 
 		// Change tabs :D
@@ -100,17 +100,17 @@
 			activateControls();
 		} );
 
-		function activateControls() {
+		function activateControls () {
 			var $tileLayer = $( '.leaflet-tile-pane' ),
 				$heatmapLayer = $( '.leaflet-heatmap-layer' ),
 				originalHeatOptions = $.extend( {}, heatOptions ); // for reset
 
 			// Update values of the dom elements
-			function updateInputs() {
+			function updateInputs () {
 				var option;
 				for ( option in heatOptions ) {
 					if ( heatOptions.hasOwnProperty( option ) ) {
-						document.getElementById( option ).value = heatOptions[ option ];
+						document.getElementById( option ).value = heatOptions[option];
 					}
 				}
 			}
@@ -184,6 +184,10 @@
 		// now let's start the read with the first block
 		chunkReaderBlock( offset, chunkSize, file );
 	}
+
+	/*
+        Default behavior for file upload (no chunking)	
+	*/
 
 	function parseKMLFile( file ) {
 		var fileSize = prettySize( file.size );
