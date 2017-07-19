@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>location-history-visualizer</title>
+    <title>Location History Visualizer – Heatmap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="Visualize your collected Google Location History data using an interactive heatmap directly in your browser.">
+    <link href="../css/style.css" rel="stylesheet">
     <link rel="stylesheet" href="index.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css"/>
 </head>
@@ -17,35 +20,38 @@
             <div id="intro" class="content-box">
                 <h2>Location History Visualizer</h2>
                 <div class="note">
-                    <strong>Note:</strong> This tool only generates heatmaps. If you're looking for minute-by-minute analysis of your Location History, including accuracy information, location-based search, advanced filtering and measurement tools, and more, check out <strong><a href="https://theopatt.com/lhv-pro">Location History Visualizer Pro</a></strong>.
+                    <strong>Note:</strong> This tool only generates heatmaps. If you're looking for minute-by-minute analysis of your Location History, including accuracy information, location-based search, advanced filtering and measurement tools, and more, check out <strong><a href="/">Location History Visualizer Pro</a></strong>.
                 </div>
-                <p>Welcome to <b>location-history-visualizer</b>, a tool for visualizing your collected Google <a href="https://google.com/locationhistory" target="_blank">Location History</a> data with heatmaps. <i>Don't worry&mdash;all processing and visualization happens directly on your computer, so rest assured that nobody is able to access your Location History but you... and Google, of course.</i> ^.^</p>
+                <p>Welcome to <b>Location History Visualizer</b>, a tool for visualizing your collected Google <a href="https://google.com/locationhistory" target="_blank">Location History</a> data with heatmaps. <i>Don't worry&mdash;all processing and visualization happens directly on your computer, so rest assured that nobody is able to access your Location History but you... and Google, of course.</i></p>
                 <p>To start off, you'll need to go to <a href="https://google.com/takeout" target="_blank">Google Takeout</a> to download your Location History data: on that page, deselect everything except Location History by clicking "Select none" and then reselecting "Location History". Then hit "Next" and, finally, click "Create archive". Once the archive has been created, click "Download". Unzip the downloaded file, and open the "Location History" folder within. <b>Then, drag and drop <i>LocationHistory.json</i> from inside that folder onto this page.</b> Let the visualization begin!</p>
                 <p class="fallback">Alternatively, select your <b>LocationHistory.json</b> file directly: <input name="file" type="file" id="file"></input></p>
-                <hr>
-                <p><i>Experimental (even faster!) import method:</i> Instead of going through Google Takeout, simply browse to the <a href="https://maps.google.com/locationhistory/kml?startTime=0&endTime=9000000000000" target="_blank">Google Location History KML API endpoint</a>. A file (<b>history-12-31-1969.kml</b>) will be downloaded &ndash; just drag and drop it onto this page, and we're off! <i>Note:</i> This uses a non-public Google API and as such may cease to work at any point. Your mileage may vary.</p>
-                <p class="credit">A project by <a href="https://theopolis.me" target="_blank">@theopolisme</a>. Made in 2014 in Memphis, Tennessee (updated 2015).</p>
+                <p class="credit">An <a target="_blank" href="https://github.com/theopolisme/location-history-visualizer">open source</a> project by the makers of <a href="/">Location History Visualizer Pro</a>.</p>
             </div>
 
             <!-- Shown in interim while processing is in progress -->
             <div id="working" class="content-box hidden">
                 <h2>Processing data...</h2>
-                <div class="spinner">
+                <div class="loading">
                     <div class="bounce1"></div>
                     <div class="bounce2"></div>
                     <div class="bounce3"></div>
                 </div>
                 <p><span id="currentStatus">Waking up...</span></p>
-                <p>This will take a while... sit back, get a cup of tea or something.</p>
+                <p>This may take a while... sit back, get a cup of tea or something.</p>
                 <p><i>Why does it take so long?</i> Depending on how long Google's been tracking your location, you may have hundreds of thousands of [latitude, longitude] pairs, every one of which must be loaded, analyzed, and plotted. That's a lot of dots.</p>
             </div>
 
             <!-- Content displayed once processing complete -->
             <div id="done" class="content-box hidden">
                 <h2>Render complete!</h2>
-                <p>Successfully processed <span id="numberProcessed"></span> data points to generate the heatmap. Click inside this box to dismiss it and start exploring...</p>
-                <p><i>Zoom</i> by scrolling, double-clicking, or using the buttons in the upper lefthand corner. <i>Navigate</i> by clicking and dragging. Hover over the menu in the lower lefthand corner to customize the heatmap rendering.</p>
-                <p class="credit">A project by <a href="http://theopolis.me" target="_blank">@theopolisme</a>. Made in 2014 in Memphis, Tennessee.</p>
+                <p>Successfully processed <span id="numberProcessed">a lot of</span> data points to generate your heatmap. Please submit your email address to start exploring...</p>
+                <div class="email-form">
+                    <input id="email" type="email" placeholder="Email address" />
+                    <button id="launch">Launch heatmap</button>
+                </div>
+                <p>Usage tips: <i>Zoom</i> by scrolling, double-clicking, or using the buttons in the upper lefthand corner. <i>Navigate</i> by clicking and dragging. Hover over the menu in the lower lefthand corner to customize the heatmap rendering.</p>
+                <div class="disclaimer">By submitting your email address you agree to receive interesting communications from the Location History Visualizer team from time to time. If you're not interested, you can unsubscribe immediately.</div>
+                <p class="credit">An <a target="_blank" href="https://github.com/theopolisme/location-history-visualizer">open source</a> project by the makers of <a href="/">Location History Visualizer Pro</a>.</p>
             </div>
         </div>
     </div>
@@ -53,7 +59,7 @@
     <!-- Appear when heatmap is displayed -->
     <div id="controls">
         <div class="title">
-            location-history-visualizer
+            Location History Visualizer
             <span>(hover for additional controls)</span>
         </div>
         <div class="control-block">
@@ -75,15 +81,6 @@
         <div class="control-block actions">
             <button id="reset">Reset to defaults</button>
         </div>
-        <div class="support">
-            <div>Find this useful? Buy me a cup of tea :)</div>
-            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-                <input type="hidden" name="cmd" value="_s-xclick">
-                <input type="hidden" name="hosted_button_id" value="AGUH8EGVDADM8">
-                <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-            </form>
-        </div>
     </div>
 
     <!-- The map, populated by leaflet.js -->
@@ -98,15 +95,16 @@
 <script src="lib/oboe-browser.min.js"></script>
 <script src="index.js"></script>
 
-<!-- Google Analytics -->
+<!-- BEGIN GOOGLE ANALYTICS -->
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-55418641-1', 'auto');
+  ga('create', 'UA-55418641-9', 'auto');
   ga('send', 'pageview');
 </script>
+<!-- END GOOGLE ANALYTICS -->
 </body>
 </html>

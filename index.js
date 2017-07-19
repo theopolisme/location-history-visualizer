@@ -43,8 +43,13 @@
 	}
 
 	function stageTwo ( file ) {
+    // Google Analytics event - heatmap upload file
+    ga('send', 'event', 'Heatmap', 'upload', undefined, file.size);
+
 		heat = L.heatLayer( [], heatOptions ).addTo( map );
+
 		var type;
+
 		try {
 			if ( /\.kml$/i.test( file.name ) ) {
 				type = 'kml';
@@ -55,12 +60,16 @@
 			status( 'Something went wrong generating your map. Ensure you\'re uploading a Google Takeout JSON file that contains location data and try again, or create an issue on GitHub if the problem persists. ( error: ' + ex.message + ' )' );
 			return;
 		}
+
 		// First, change tabs
 		$( 'body' ).addClass( 'working' );
 		$( '#intro' ).addClass( 'hidden' );
 		$( '#working' ).removeClass( 'hidden' );
+
 		var latlngs = [];
+
 		var os = new oboe();
+
 		os.node( 'locations.*', function ( location ) {
 			var SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
 			if ( type === 'json' ) latlngs.push( [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] );
@@ -73,16 +82,20 @@
 			stageThree(  /* numberProcessed */ latlngs.length );
 
 		} );
+
 		var fileSize = prettySize( file.size );
 
 		status( 'Preparing to import file ( ' + fileSize + ' )...' );
+
 		// Now start working!
 		if ( type === 'json' ) parseJSONFile( file, os );
 		if ( type === 'kml' ) parseKMLFile( file );
-
 	}
 
 	function stageThree ( numberProcessed ) {
+    // Google Analytics event - heatmap render
+    ga('send', 'event', 'Heatmap', 'render', undefined, numberProcessed);
+
 		var $done = $( '#done' );
 
 		// Change tabs :D
@@ -93,12 +106,22 @@
 		// Update count
 		$( '#numberProcessed' ).text( numberProcessed.toLocaleString() );
 
-		// Fade away when clicked
-		$done.one( 'click', function () {
-			$( 'body' ).addClass( 'map-active' );
-			$done.fadeOut();
-			activateControls();
-		} );
+    $( '#launch' ).click( function () {
+      var $email = $( '#email' );
+      if ( $email.is( ':valid' ) ) {
+        $( this ).text( 'Launching... ' );
+        $.post( '/heatmap/submit-email.php', {
+          email: $email.val()
+        } )
+        .always( function () {
+          $( 'body' ).addClass( 'map-active' );
+          $done.fadeOut();
+          activateControls();
+        } );
+      } else {
+        alert( 'Please enter a valid email address to proceed.' );
+      }
+    } );
 
 		function activateControls () {
 			var $tileLayer = $( '.leaflet-tile-pane' ),
@@ -149,6 +172,7 @@
 
 	function parseJSONFile( file, oboeInstance ) {
 		var fileSize = file.size;
+		var prettyFileSize = prettySize(fileSize);
 		var chunkSize = 512 * 1024; // bytes
 		var offset = 0;
 		var self = this; // we need a reference to the current object
@@ -160,7 +184,7 @@
 				offset += evt.target.result.length;
 				var chunk = evt.target.result;
 				var percentLoaded = ( 100 * offset / fileSize ).toFixed( 0 );
-				status( percentLoaded + '% of ' + fileSize + ' loaded...' );
+				status( percentLoaded + '% of ' + prettyFileSize + ' loaded...' );
 				oboeInstance.emit( 'data', chunk ); // callback for handling read chunk
 			} else {
 				return;

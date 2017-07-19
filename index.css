@@ -1,7 +1,7 @@
 body {
     padding: 0;
     margin: 0;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /* font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; */
     font-size: 14px;
 }
 
@@ -12,6 +12,14 @@ html, body, #map {
 
 body.working {
 	cursor: progress;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+p {
+  line-height: 22px;
 }
 
 .visualizer {
@@ -49,16 +57,19 @@ body.working {
 .content {
 	display: table-cell;
 	vertical-align: middle;
+  padding: 10px 0;
 }
 
 .content-box {
 	margin: 0 auto;
-	width: 50%;
+	width: 80%;
 	min-width: 300px;
 	max-width: 600px;
 	background-color: rgba(255,255,255,0.9);
 	padding: 10px;
-	border-radius: 10px;
+	border-radius: 8px;
+  max-height: 85vh;
+  overflow-y: scroll;
 }
 
 h2 {
@@ -69,9 +80,13 @@ h2 {
   padding: 10px;
   text-align: center;
   background-color: #ffeb3b;
+  border-radius: 8px;
 }
 
 .credit {
+  padding-top: 4px;
+  margin-top: 12px;
+  border-top: 1px solid #ccc;
 	font-size: 0.8em;
 	text-align: center;
 }
@@ -85,10 +100,6 @@ h2 {
 	text-align: center;
 }
 
-#done {
-	cursor: pointer;
-}
-
 #controls {
   z-index: 99999;
   position: absolute;
@@ -98,7 +109,7 @@ h2 {
   div will always reveal the *correct* top part. When we expand it later (on hover),
   we set height back to auto, so that all the content is shown correctly. Slightly
   hacky, yes, but it appears to be working in all browsers. A Good Thing. */
-  height: 171px;
+  height: 133px;
   left: 0px;
   margin: 0px 10px;
   padding: 3px 16px 5px;
@@ -107,7 +118,7 @@ h2 {
 }
 
 .map-active #controls {
-  bottom: -145px;
+  bottom: -106px;
 }
 
 #controls:hover {
@@ -164,13 +175,13 @@ h2 {
 
 /* http://tobiasahlin.com/spinkit/ */
 
-.spinner {
+.loading {
   margin: 20px auto 0;
   width: 70px;
   text-align: center;
 }
 
-.spinner > div {
+.loading > div {
   width: 18px;
   height: 18px;
   background-color: #333;
@@ -184,12 +195,12 @@ h2 {
   animation-fill-mode: both;
 }
 
-.spinner .bounce1 {
+.loading .bounce1 {
   -webkit-animation-delay: -0.32s;
   animation-delay: -0.32s;
 }
 
-.spinner .bounce2 {
+.loading .bounce2 {
   -webkit-animation-delay: -0.16s;
   animation-delay: -0.16s;
 }
@@ -207,4 +218,65 @@ h2 {
     transform: scale(1.0);
     -webkit-transform: scale(1.0);
   }
+}
+
+/* email signup */
+.email-form {
+  margin: 16px 0;
+  text-align: center;
+}
+
+input#email {
+  font-size: 16px;
+  font-family: PTSans, Helvetica, Arial, sans-serif;
+  border-radius: 2px;
+  background-color: white;
+  padding: 6px 6px;
+  min-width: 200px;
+  border: 1px solid #ccc;
+  outline: 0;
+}
+
+button#launch {
+  font-family: PTSans, Helvetica, Arial, sans-serif;
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: top;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background-color: #1080f2;
+  border-radius: 2px;
+  color: white;
+  font-family: PTSans;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: 0.3s;
+  outline: 0;
+}
+
+button#launch:active, button#launch:focus, button#launch:hover {
+  background-color: #273140;
+  color: #fff;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+}
+
+div.disclaimer {
+  color: #B7B7B7;
+  font-size: 0.9em;
+  margin-top: 8px;
+  font-style: italic;
 }
