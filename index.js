@@ -66,13 +66,20 @@
 		$( '#intro' ).addClass( 'hidden' );
 		$( '#working' ).removeClass( 'hidden' );
 
+		var SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
 		var latlngs = [];
 
 		var os = new oboe();
 
 		os.node( 'locations.*', function ( location ) {
-			var SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
-			if ( type === 'json' ) latlngs.push( [ location.latitudeE7 * SCALAR_E7, location.longitudeE7 * SCALAR_E7 ] );
+			var latitude = location.latitudeE7 * SCALAR_E7,
+				longitude = location.longitudeE7 * SCALAR_E7;
+
+			// Handle negative latlngs. 
+			if ( latitude > 180 ) latitude = -latitude % 180;
+			if ( longitude > 180 ) longitude = -longitude % 180;
+
+			if ( type === 'json' ) latlngs.push( [ latitude, longitude ] );
 			return oboe.drop;
 		} ).done( function () {
 			status( 'Generating map...' );
