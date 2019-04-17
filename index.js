@@ -75,9 +75,9 @@
 			var latitude = location.latitudeE7 * SCALAR_E7,
 				longitude = location.longitudeE7 * SCALAR_E7;
 
-			// Handle negative latlngs. 
-			if ( latitude > 180 ) latitude = -latitude % 180;
-			if ( longitude > 180 ) longitude = -longitude % 180;
+			// Handle negative latlngs due to google unsigned/signed integer bug.
+			if ( latitude > 180 ) latitude = latitude - (2 ** 32) * SCALAR_E7;
+			if ( longitude > 180 ) longitude = longitude - (2 ** 32) * SCALAR_E7;
 
 			if ( type === 'json' ) latlngs.push( [ latitude, longitude ] );
 			return oboe.drop;
