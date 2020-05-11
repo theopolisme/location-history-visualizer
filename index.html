@@ -36,13 +36,11 @@
             <!-- Intro, before data has been uploaded -->
             <div id="intro" class="content-box">
                 <h2>Location History Visualizer</h2>
-                <div class="note">
-                    <strong>Note:</strong> This tool only generates heatmaps. If you're looking for minute-by-minute analysis of your Location History, including accuracy information, location-based search, advanced filtering and measurement tools, and more, check out <strong><a href="/">Location History Visualizer Pro</a></strong>.
-                </div>
+
                 <p>Welcome to <b>Location History Visualizer</b>, a tool for visualizing your collected Google <a href="https://google.com/locationhistory" target="_blank">Location History</a> data with heatmaps. <i>Don't worry&mdash;all processing and visualization happens directly on your computer, so rest assured that nobody is able to access your Location History but you... and Google, of course.</i></p>
-                <p>To start off, you'll need to go to <a href="https://google.com/takeout" target="_blank">Google Takeout</a> to download your Location History data: on that page, deselect everything except Location History by clicking "Select none" and then reselecting "Location History". Then hit "Next" and, finally, click "Create archive". Once the archive has been created, click "Download". Unzip the downloaded file, and open the "Location History" folder within. <b>Then, drag and drop <i>LocationHistory.json</i> from inside that folder onto this page.</b> Let the visualization begin!</p>
+                <p>To start off, you'll need to go to <a href="https://google.com/takeout" target="_blank">Google Takeout</a> to download your Location History data: on that page, deselect everything except Location History by clicking "Select none" and then reselecting "Location History". Then hit "Next" and, finally, click "Create archive". Once the archive has been created, click "Download". Unzip the downloaded file, and open the "Location History" folder within. Then, <b>drag and drop <i>LocationHistory.json</i> from inside that folder onto this page.</b> Let the visualization begin!</p>
                 <p class="fallback">Alternatively, select your <b>LocationHistory.json</b> file directly: <input name="file" type="file" id="file"></input></p>
-                <p class="credit">An <a target="_blank" href="https://github.com/theopolisme/location-history-visualizer">open source</a> project by the makers of <a href="/">Location History Visualizer Pro</a>.</p>
+                <p class="credit">A <a target="_blank" href="https://github.com/operte/location-history-visualizer">fork</a> of <a target="_blank" href="https://github.com/theopolisme/location-history-visualizer">this</a> open source project.</p>
             </div>
 
             <!-- Shown in interim while processing is in progress -->
@@ -56,6 +54,7 @@
                 <p><span id="currentStatus">Waking up...</span></p>
                 <p>This may take a while... sit back, get a cup of tea or something.</p>
                 <p><i>Why does it take so long?</i> Depending on how long Google's been tracking your location, you may have hundreds of thousands of [latitude, longitude] pairs, every one of which must be loaded, analyzed, and plotted. That's a lot of dots.</p>
+                <p class="credit">A <a target="_blank" href="https://github.com/operte/location-history-visualizer">fork</a> of <a target="_blank" href="https://github.com/theopolisme/location-history-visualizer">this</a> open source project.</p>
             </div>
 
             <!-- Content displayed once processing complete -->
@@ -67,8 +66,7 @@
                     <button id="launch">Launch heatmap</button>
                 </div>
                 <p>Usage tips: <i>Zoom</i> by scrolling, double-clicking, or using the buttons in the upper lefthand corner. <i>Navigate</i> by clicking and dragging. Hover over the menu in the lower lefthand corner to customize the heatmap rendering.</p>
-                <div class="disclaimer">By submitting your email address you agree to receive interesting communications from the Location History Visualizer team from time to time. If you're not interested, you can unsubscribe immediately.</div>
-                <p class="credit">An <a target="_blank" href="https://github.com/theopolisme/location-history-visualizer">open source</a> project by the makers of <a href="/">Location History Visualizer Pro</a>.</p>
+                <p class="credit">A <a target="_blank" href="https://github.com/operte/location-history-visualizer">fork</a> of <a target="_blank" href="https://github.com/theopolisme/location-history-visualizer">this</a> open source project.</p>
             </div>
         </div>
     </div>
