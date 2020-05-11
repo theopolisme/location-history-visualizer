@@ -1,10 +1,10 @@
 # location-history-visualizer
 
-**Available online: [locationhistoryvisualizer.com/heatmap/](https://locationhistoryvisualizer.com/heatmap/)**
+**Available online: [raw.githack.com/operte/location-history-visualizer/master/index.html](https://raw.githack.com/operte/location-history-visualizer/master/index.html)**
 
 A tool for visualizing your complete, consolidated, collected Google [Location History](https://google.com/locationhistory).
 
-It works directly in your web browser &ndash; no software to download, no packages to install. **Everyone deserves to know what data is being collected about them, without having to fiddle with cryptic pieces of software.**
+It works directly in your web browser &ndash; no software to download, no packages to install. 
 
 *location-history-visualizer* takes raw Google Takeout output and produces a heatmap of all of your location data over time, overlaid on an interactive map.
 
