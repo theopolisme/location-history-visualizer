@@ -70,6 +70,8 @@
 
 			var SCALAR_E7 = 0.0000001; // Since Google Takeout stores latlngs as integers
 			var latlngs = [];
+			var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
+
 
 			// Use Oboe to stream Google Takeout data if file is JSON
 			var os = new oboe();
@@ -87,6 +89,7 @@
 				status( 'Generating map...' );
 				heat._latlngs = latlngs;
 				heat.redraw();
+				polyline.setLatLngs(latlngs);
 
 				stageThree(  /* numberProcessed */ latlngs.length );
 			} );
