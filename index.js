@@ -1,11 +1,5 @@
 ( function ( $, L, prettySize ) {
-		var map, heat,
-			heatOptions = {
-				tileOpacity: 1,
-				heatOpacity: 1,
-				radius: 25,
-				blur: 15
-			};
+		var map;
 
 		// Updates currentStatus field during data loading
 		function status( message ) {
@@ -48,8 +42,6 @@
 	    // Google Analytics event - heatmap upload file
 	    ga('send', 'event', 'Heatmap', 'upload', undefined, file.size);
 
-			heat = L.heatLayer( [], heatOptions ).addTo( map );
-
 			var type;
 
 			try {
@@ -87,8 +79,6 @@
 				return oboe.drop;
 			} ).done( function () {
 				status( 'Generating map...' );
-				heat._latlngs = latlngs;
-				heat.redraw();
 				polyline.setLatLngs(latlngs);
 
 				stageThree(  /* numberProcessed */ latlngs.length );
@@ -169,7 +159,6 @@
 				$( '#reset' ).click( function () {
 					$.extend( heatOptions, originalHeatOptions );
 					updateInputs();
-					heat.setOptions( heatOptions );
 					// Reset opacity too
 					$heatmapLayer.css( 'opacity', originalHeatOptions.heatOpacity );
 					$tileLayer.css( 'opacity', originalHeatOptions.tileOpacity );
