@@ -53,8 +53,10 @@
 		try {
 			if ( /\.kml$/i.test( file.name ) ) {
 				type = 'kml';
-			} else {
+			} else 	if ( /\.json$/i.test( file.name ) ) {
 				type = 'json';
+			} else {
+				type = 'other';
 			}
 		} catch ( ex ) {
 			status( 'Something went wrong generating your map. Ensure you\'re uploading a Google Takeout JSON file that contains location data and try again, or create an issue on GitHub if the problem persists. ( error: ' + ex.message + ' )' );
@@ -97,6 +99,7 @@
 		// Now start working!
 		if ( type === 'json' ) parseJSONFile( file, os );
 		if ( type === 'kml' ) parseKMLFile( file );
+		if ( type === 'other' ) status('ERROR: Please make sure the file you\'re uploading has a .json extension');
 	}
 
 	function stageThree ( numberProcessed ) {
