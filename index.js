@@ -37,6 +37,7 @@
 
 		// For mobile browsers, allow direct file selection as well
 		$( '#file' ).change( function () {
+
 			stageTwo( this.files[0] );
 			dropzone.disable();
 		} );
@@ -79,12 +80,11 @@
 			if ( latitude > 180 ) latitude = latitude - (2 ** 32) * SCALAR_E7;
 			if ( longitude > 180 ) longitude = longitude - (2 ** 32) * SCALAR_E7;
 
-			if ( type === 'json' ) latlngs.push( [ latitude, longitude ] );
+			if ( type === 'json' && latitude >= 0 &&  longitude >= 0) latlngs.push( [ latitude, longitude ] );
 			return oboe.drop;
 		} ).done( function () {
 			status( 'Generating map...' );
 			heat._latlngs = latlngs;
-
 			heat.redraw();
 			stageThree(  /* numberProcessed */ latlngs.length );
 
