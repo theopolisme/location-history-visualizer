@@ -79,7 +79,7 @@
 			if ( latitude > 180 ) latitude = latitude - (2 ** 32) * SCALAR_E7;
 			if ( longitude > 180 ) longitude = longitude - (2 ** 32) * SCALAR_E7;
 
-			if ( type === 'json' ) latlngs.push( [ latitude, longitude ] );
+			if ( type === 'json' && !isNaN(latitude) && !isNaN(longitude) ) latlngs.push( [ latitude, longitude ] );
 			return oboe.drop;
 		} ).done( function () {
 			status( 'Generating map...' );
